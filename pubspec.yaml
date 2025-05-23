@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  supabase_flutter: ^1.0.0
-  wifi_scan: ^2.0.0
-  flutter_blue_plus: ^2.0.0
+  supabase_flutter: ^2.5.3
+  wifi_scan: ^0.4.1
+  flutter_blue_plus: 1.35.3
 
 dev_dependencies:
   flutter_test:
