@@ -1,4 +1,4 @@
-library flutter_location_fingerprint;
+library location;
 
 export 'src/api.dart';
 export 'src/standort_view.dart';
