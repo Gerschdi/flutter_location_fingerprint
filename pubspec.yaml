@@ -1,4 +1,4 @@
-name: location
+name: flutter_location_fingerprint
 description: A Flutter library for fingerprint matching and location view.
 version: 0.1.0
 publish_to: none
