@@ -1,0 +1,19 @@
+name: flutter_location_fingerprint
+description: A Flutter library for fingerprint matching and location view.
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  supabase_flutter: ^1.0.0
+  wifi_scan: ^2.0.0
+  flutter_blue_plus: ^2.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
