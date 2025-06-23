@@ -86,7 +86,6 @@ Future<String> getWifiStandort({double overlapPct = 0.2}) async {
       best = fp.name;
     }
   }
-  debugPrint('getWifiStandort -> \$best (\$bestScore)');
   return best;
 }
 
@@ -120,7 +119,6 @@ Future<String> getBleStandort({double overlapPct = 0.2}) async {
       best = fp.name;
     }
   }
-  debugPrint('getBleStandort -> \$best (\$bestScore)');
   return best;
 }
 
@@ -133,6 +131,5 @@ Future<String> getHybridStandort({
   final wifi = await getWifiStandort(overlapPct: overlapPct);
   final ble = await getBleStandort(overlapPct: overlapPct);
   final result = (wifiWeight >= bleWeight) ? wifi : ble;
-  debugPrint('getHybridStandort -> \$result');
   return result;
 }
