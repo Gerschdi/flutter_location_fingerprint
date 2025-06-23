@@ -5,22 +5,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'ble_controller.dart';
 import 'fingerprint.dart';
 
-// Cached fingerprints loaded once at plugin init
-late List<Fingerprint> _fingerprints;
-bool _fingerprintsLoaded = false;
-
-/// Call once at app start to load fingerprints
-Future<void> initFingerprintMatching() async {
-  if (_fingerprintsLoaded) return;
-  final resp = await Supabase.instance.client.from('fingerprints').select();
-  final list = resp as List;
-  _fingerprints = list
-      .map((j) => Fingerprint.fromJson(j as Map<String, dynamic>))
-      .toList();
-  _fingerprintsLoaded = true;
-  debugPrint('Loaded \${_fingerprints.length} fingerprints');
-}
-
 /// Normalize IDs (BSSID or BLE device IDs) to lowercase without separators
 String _normalizeId(String id) =>
     id.toLowerCase().replaceAll(RegExp(r'[:\-]'), '');
@@ -71,7 +55,13 @@ double _improvedCosine(
 
 /// Determine best location by WiFi
 Future<String> getWifiStandort({double overlapPct = 0.2}) async {
-  await initFingerprintMatching();
+  // Load fingerprints
+  final resp = await Supabase.instance.client.from('fingerprints').select();
+  final list = resp as List;
+  final fps = list
+      .map((j) => Fingerprint.fromJson(j as Map<String, dynamic>))
+      .toList();
+
   // 1) WiFi scan
   Map<String, int> wifiMap = {};
   if (await WiFiScan.instance.canStartScan(askPermissions: true) ==
@@ -88,7 +78,7 @@ Future<String> getWifiStandort({double overlapPct = 0.2}) async {
   // Compute scores
   String best = 'Unknown';
   double bestScore = -1;
-  for (var fp in _fingerprints) {
+  for (var fp in fps) {
     final wData = _normalizeMap(fp.wifiData ?? {});
     final score = _improvedCosine(wData, wifiMap, overlapPct);
     if (score > bestScore) {
@@ -102,7 +92,13 @@ Future<String> getWifiStandort({double overlapPct = 0.2}) async {
 
 /// Determine best location by BLE
 Future<String> getBleStandort({double overlapPct = 0.2}) async {
-  await initFingerprintMatching();
+  // Load fingerprints
+  final resp = await Supabase.instance.client.from('fingerprints').select();
+  final list = resp as List;
+  final fps = list
+      .map((j) => Fingerprint.fromJson(j as Map<String, dynamic>))
+      .toList();
+
   // 1) BLE scan
   Map<String, int> bleMap = {};
   try {
@@ -116,7 +112,7 @@ Future<String> getBleStandort({double overlapPct = 0.2}) async {
   // Compute scores
   String best = 'Unknown';
   double bestScore = -1;
-  for (var fp in _fingerprints) {
+  for (var fp in fps) {
     final bData = _normalizeMap(fp.bleData ?? {});
     final score = _improvedCosine(bData, bleMap, overlapPct);
     if (score > bestScore) {
@@ -136,7 +132,6 @@ Future<String> getHybridStandort({
 }) async {
   final wifi = await getWifiStandort(overlapPct: overlapPct);
   final ble = await getBleStandort(overlapPct: overlapPct);
-  // Choose by highest weight or implement combined scoring
   final result = (wifiWeight >= bleWeight) ? wifi : ble;
   debugPrint('getHybridStandort -> \$result');
   return result;
